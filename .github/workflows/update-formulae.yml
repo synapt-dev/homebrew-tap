@@ -1,0 +1,47 @@
+name: Update formulae
+
+on:
+  schedule:
+    - cron: "17 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: update-formulae
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Update formulae
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/update_formulae.py
+      - name: Publish tested formula update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          branch="automation/formula-updates-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add Formula
+          git commit -m "chore: update formulae"
+          git push origin "$branch"
+          test_run_url="$(gh workflow run test-formulae.yml --ref "$branch")"
+          test_run_id="${test_run_url##*/}"
+          if [[ ! "$test_run_id" =~ ^[0-9]+$ ]]; then
+            echo "Could not resolve formula test run from: $test_run_url" >&2
+            exit 1
+          fi
+          gh run watch "$test_run_id" --exit-status
+          git push origin "$branch:main"
+          git push origin --delete "$branch"
