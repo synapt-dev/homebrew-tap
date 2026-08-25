@@ -22,6 +22,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869 # main
+        with:
+          brew-gh-api-token: ""
       - run: brew audit --strict synapt-dev/tap/gitgrip synapt-dev/tap/synapt
       - run: brew install synapt-dev/tap/gitgrip synapt-dev/tap/synapt
       - run: brew test synapt-dev/tap/gitgrip synapt-dev/tap/synapt
