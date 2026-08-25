@@ -6,8 +6,13 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
+
+concurrency:
+  group: update-formulae
+  cancel-in-progress: false
 
 jobs:
   update:
@@ -19,7 +24,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          count="$(gh pr list --state open --json headRefName --jq '[.[] | select(.headRefName | startswith("automation/formula-updates-"))] | length')"
+          count="$(gh pr list --state open --json headRefName,isCrossRepository --jq '[.[] | select((.isCrossRepository | not) and (.headRefName | startswith("automation/formula-updates-")))] | length')"
           echo "skip=$([[ "$count" -gt 0 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - name: Update formulae
         if: steps.existing.outputs.skip != 'true'
@@ -41,8 +46,15 @@ jobs:
           git add Formula
           git commit -m "chore: update formulae"
           git push origin "$branch"
+          test_run_url="$(gh workflow run test-formulae.yml --ref "$branch")"
+          test_run_id="${test_run_url##*/}"
+          if [[ ! "$test_run_id" =~ ^[0-9]+$ ]]; then
+            echo "Could not resolve formula test run from: $test_run_url" >&2
+            exit 1
+          fi
+          gh run watch "$test_run_id" --exit-status
           gh pr create \
             --base main \
             --head "$branch" \
             --title "chore: update formulae" \
-            --body "Automated update from the latest synapt and gitgrip releases. Formula CI must pass before merge."
+            --body "Automated update from the latest synapt and gitgrip releases. The required macOS and Linux formula checks passed on this exact head before the PR was opened."
