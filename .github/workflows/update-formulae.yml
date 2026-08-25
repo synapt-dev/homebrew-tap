@@ -8,7 +8,6 @@ on:
 permissions:
   actions: write
   contents: write
-  pull-requests: write
 
 concurrency:
   group: update-formulae
@@ -19,20 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Skip while an automated update is open
-        id: existing
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          count="$(gh pr list --state open --json headRefName,isCrossRepository --jq '[.[] | select((.isCrossRepository | not) and (.headRefName | startswith("automation/formula-updates-")))] | length')"
-          echo "skip=$([[ "$count" -gt 0 ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - name: Update formulae
-        if: steps.existing.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/update_formulae.py
-      - name: Open update pull request
-        if: steps.existing.outputs.skip != 'true'
+      - name: Publish tested formula update
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -53,8 +43,5 @@ jobs:
             exit 1
           fi
           gh run watch "$test_run_id" --exit-status
-          gh pr create \
-            --base main \
-            --head "$branch" \
-            --title "chore: update formulae" \
-            --body "Automated update from the latest synapt and gitgrip releases. The required macOS and Linux formula checks passed on this exact head before the PR was opened."
+          git push origin "$branch:main"
+          git push origin --delete "$branch"
