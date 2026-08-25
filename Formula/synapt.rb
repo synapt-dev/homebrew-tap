@@ -16,11 +16,11 @@ class Synapt < Formula
   resource "binary" do
     on_macos do
       url "https://github.com/synapt-dev/recall/releases/download/v0.20.0/synapt-macos-aarch64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+      sha256 "3179130afc7de6e0433f77d6cf37ff750c79197b0e98d6a2927886836f2b6f9f"
     end
     on_linux do
       url "https://github.com/synapt-dev/recall/releases/download/v0.20.0/synapt-linux-x86_64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+      sha256 "0d05df84bd0200bb020d6e635973220bb0fe5995ae77a5f4455c6f7b2adeec38"
     end
   end
 
