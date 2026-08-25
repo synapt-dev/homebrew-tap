@@ -10,6 +10,16 @@ brew tap synapt-dev/tap
 
 ## Available Formulae
 
+### synapt
+
+Persistent conversational memory and coordination for AI coding assistants.
+
+```bash
+brew install synapt-dev/tap/synapt
+```
+
+The formula currently supports macOS Apple Silicon and Linux x86_64.
+
 ### gitgrip
 
 Multi-repo workflow tool for synchronized branches, linked PRs, and atomic merges.

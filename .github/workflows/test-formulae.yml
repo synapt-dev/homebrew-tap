@@ -1,0 +1,21 @@
+name: Test formulae
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Homebrew/actions/setup-homebrew@main
+      - run: brew audit --strict synapt-dev/tap/gitgrip synapt-dev/tap/synapt
+      - run: brew install synapt-dev/tap/synapt
+      - run: brew test synapt-dev/tap/synapt
