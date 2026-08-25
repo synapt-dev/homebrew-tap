@@ -22,7 +22,7 @@ def request_bytes(url: str) -> bytes:
         "User-Agent": "synapt-homebrew-updater",
         "X-GitHub-Api-Version": "2022-11-28",
     }
-    if TOKEN:
+    if TOKEN and url.startswith(f"{API}/"):
         headers["Authorization"] = f"Bearer {TOKEN}"
     with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as response:
         return response.read()

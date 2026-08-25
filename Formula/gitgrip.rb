@@ -7,8 +7,8 @@ class Gitgrip < Formula
 
   license "MIT"
 
-  depends_on "rust" => :build
   depends_on "pkg-config" => :build
+  depends_on "rust" => :build
   depends_on "openssl@3"
 
   def install
