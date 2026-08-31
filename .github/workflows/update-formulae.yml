@@ -8,6 +8,7 @@ on:
 permissions:
   actions: write
   contents: write
+  pull-requests: write
 
 concurrency:
   group: update-formulae
@@ -25,23 +26,9 @@ jobs:
       - name: Publish tested formula update
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          if git diff --quiet; then
-            exit 0
-          fi
-          branch="automation/formula-updates-${GITHUB_RUN_ID}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c "$branch"
-          git add Formula
-          git commit -m "chore: update formulae"
-          git push origin "$branch"
-          test_run_url="$(gh workflow run test-formulae.yml --ref "$branch")"
-          test_run_id="${test_run_url##*/}"
-          if [[ ! "$test_run_id" =~ ^[0-9]+$ ]]; then
-            echo "Could not resolve formula test run from: $test_run_url" >&2
-            exit 1
-          fi
-          gh run watch "$test_run_id" --exit-status
-          git push origin "$branch:main"
-          git push origin --delete "$branch"
+        # Opens exactly one PR per set of Formula bytes (a second run with the same
+        # bumps resolves to the same branch and PR; different bytes close the stale
+        # candidate) and then FAILS with the PR URL for a person to merge: the
+        # workflow token cannot satisfy main's required checks. Witness:
+        # scripts/tests/test_publish_formula_update.sh.
+        run: scripts/publish_formula_update.sh
