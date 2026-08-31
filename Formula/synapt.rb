@@ -1,8 +1,8 @@
 class Synapt < Formula
   desc "Persistent conversational memory for AI coding assistants"
   homepage "https://synapt.dev"
-  url "https://github.com/synapt-dev/recall/archive/refs/tags/v0.21.0.tar.gz"
-  sha256 "44c8c035414082ff127567b129ab0d1e8c163c47fec9ce0468d23cf485113017"
+  url "https://github.com/synapt-dev/recall/archive/refs/tags/v0.22.0.tar.gz"
+  sha256 "358c36f792e914299f142d49e30d2ec59f5eb12f5a737cb8c17d63156318a2a8"
   license "MIT"
 
   on_macos do
@@ -15,12 +15,12 @@ class Synapt < Formula
 
   resource "binary" do
     on_macos do
-      url "https://github.com/synapt-dev/recall/releases/download/v0.21.0/synapt-macos-aarch64.tar.gz"
-      sha256 "44a527ab1f75ad450573995f037a4439c2bf53adfd8ccda92a7fc941070bf4cc"
+      url "https://github.com/synapt-dev/recall/releases/download/v0.22.0/synapt-macos-aarch64.tar.gz"
+      sha256 "6de0b5529fdb00c17cba93b01f7c1a0bd4e4e7b407640f96fdbfd792e7f4d949"
     end
     on_linux do
-      url "https://github.com/synapt-dev/recall/releases/download/v0.21.0/synapt-linux-x86_64.tar.gz"
-      sha256 "c1b6c61ac27cb5e5b38dedf75e40c764240c988b1c0be2c7f06051c447104279"
+      url "https://github.com/synapt-dev/recall/releases/download/v0.22.0/synapt-linux-x86_64.tar.gz"
+      sha256 "4c8544f1755e5d201b813377eb788f34ce06f0f24b244ef89dfa99963496098a"
     end
   end
 
