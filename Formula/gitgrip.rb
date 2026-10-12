@@ -2,8 +2,8 @@ class Gitgrip < Formula
   desc "Multi-repo workflow for synchronized branches, linked PRs, and atomic merges"
   homepage "https://synapt.dev/grip"
 
-  url "https://github.com/synapt-dev/grip/archive/refs/tags/v1.5.2.tar.gz"
-  sha256 "986522527dc973b471ec78773ac3465f5410670dc956e4db2482e61245e9ea16"
+  url "https://github.com/synapt-dev/grip/archive/refs/tags/v1.6.0.tar.gz"
+  sha256 "28a405cbd065d76c96ec6ebfcccccbe485c2728410efd5a2eeff3daa310ddb9d"
 
   license "MIT"
 
