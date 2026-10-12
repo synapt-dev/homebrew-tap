@@ -16,6 +16,10 @@ class Gitgrip < Formula
   end
 
   test do
-    assert_match "Multi-repo workflow tool", shell_output("#{bin}/gr --help")
+    # From 1.6.0 `gr` hands off to gr2 when one is on PATH, so it answers differently by machine;
+    # `gr1` is always the gr 1.x CLI.
+    assert_match "Multi-repo workflow tool", shell_output("#{bin}/gr1 --help")
+    assert_match "gr #{version}", shell_output("#{bin}/gr1 --version")
+    assert_predicate bin/"gr", :executable?
   end
 end
