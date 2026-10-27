@@ -32,6 +32,30 @@ def latest_release(repository: str) -> dict:
     return json.loads(request_bytes(f"{API}/repos/{repository}/releases/latest"))
 
 
+def highest_release(repository: str, major: int) -> dict | None:
+    """Highest final vMAJOR.y.z release by version, across every page.
+
+    GitHub lists releases by creation date, and a patch release from a
+    maintenance branch can be created after a higher one.
+    """
+    best, best_version = None, None
+    page = 1
+    while True:
+        releases = json.loads(request_bytes(f"{API}/repos/{repository}/releases?per_page=100&page={page}"))
+        if not releases:
+            return best
+        for release in releases:
+            if release["draft"] or release["prerelease"]:
+                continue
+            match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", release["tag_name"])
+            if not match:
+                continue
+            version = tuple(int(part) for part in match.groups())
+            if version[0] == major and (best_version is None or version > best_version):
+                best, best_version = release, version
+        page += 1
+
+
 def sha256_url(url: str) -> str:
     return hashlib.sha256(request_bytes(url)).hexdigest()
 
@@ -46,7 +70,10 @@ def replace_url_and_hash(text: str, old_url_pattern: str, url: str, digest: str)
 
 
 def update_gitgrip() -> str:
-    release = latest_release("synapt-dev/grip")
+    # gr 1.x only: a gr2/v* release on the same repo can be releases/latest.
+    release = highest_release("synapt-dev/grip", 1)
+    if release is None:
+        raise RuntimeError("gitgrip: no final v1.x.y release on synapt-dev/grip; leaving gitgrip.rb unchanged")
     tag = release["tag_name"]
     url = f"https://github.com/synapt-dev/grip/archive/refs/tags/{tag}.tar.gz"
     path = ROOT / "Formula" / "gitgrip.rb"
